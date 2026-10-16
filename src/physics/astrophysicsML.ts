@@ -143,7 +143,7 @@ export function exportTrajectoryToCSV(history: TrajectoryPoint[], g1: GalaxyPara
   ].join(','));
 
   const metadata = [
-    `# AstroCollision N-Body Simulation Trajectory Export`,
+    `# Galaxy N-Body Simulation Trajectory Export`,
     `# Galaxy 1: ${g1.name} (Mass: ${g1.mass} x 10^10 M_sun, Radius: ${g1.radius} kpc)`,
     `# Galaxy 2: ${g2.name} (Mass: ${g2.mass} x 10^10 M_sun, Radius: ${g2.radius} kpc)`,
     `# Units: Length in kpc, Velocity in km/s, Time in Myr`,
@@ -158,8 +158,8 @@ export function exportTrajectoryToCSV(history: TrajectoryPoint[], g1: GalaxyPara
  */
 export function generatePythonAnalysisScript(scenarioName: string): string {
   return `"""
-AstroCollision: Script de Análise Astrofísica em Python (Astropy / NumPy / Matplotlib)
-Carrega o arquivo 'trajetoria_astrocollision.csv' exportado pelo simulador.
+Galaxy: Script de Análise Astrofísica em Python (Astropy / NumPy / Matplotlib)
+Carrega o arquivo 'trajetoria_galaxy.csv' exportado pelo simulador.
 """
 import pandas as pd
 import numpy as np

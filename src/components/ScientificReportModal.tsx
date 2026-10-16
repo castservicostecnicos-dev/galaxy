@@ -75,7 +75,7 @@ export const ScientificReportModal: React.FC<ScientificReportModalProps> = ({
       doc.setTextColor(255, 255, 255);
       doc.setFont('helvetica', 'bold');
       doc.setFontSize(16);
-      doc.text('ASTROCOLLISION - RELATÓRIO TÉCNICO DE SIMULAÇÃO', 14, 14);
+      doc.text('GALAXY - RELATÓRIO TÉCNICO DE SIMULAÇÃO', 14, 14);
 
       doc.setFont('helvetica', 'normal');
       doc.setFontSize(9);
@@ -195,7 +195,7 @@ export const ScientificReportModal: React.FC<ScientificReportModalProps> = ({
       // Footer
       doc.setFontSize(8);
       doc.setTextColor(148, 163, 184);
-      doc.text('Gerado automaticamente pelo AstroCollision 3D - Simulador de Galáxias N-Corpos', 14, 285);
+      doc.text('Gerado automaticamente pelo Galaxy - Simulador de Galáxias N-Corpos', 14, 285);
       doc.text('Página 1 de 1', 185, 285);
 
       doc.save(`astrocollision_relatorio_${scenarioName.toLowerCase().replace(/\s+/g, '_')}.pdf`);
@@ -234,7 +234,7 @@ export const ScientificReportModal: React.FC<ScientificReportModalProps> = ({
           <div className="bg-slate-900 p-6 rounded-2xl border border-slate-800 shadow-xl space-y-6">
             <div className="flex items-start justify-between border-b border-slate-800 pb-4">
               <div>
-                <span className="text-[11px] font-bold uppercase tracking-widest text-cyan-400">AstroCollision • Relatório de Simulação</span>
+                <span className="text-[11px] font-bold uppercase tracking-widest text-cyan-400">Galaxy • Relatório de Simulação</span>
                 <h1 className="text-2xl font-bold text-white mt-1">{scenarioName}</h1>
                 <p className="text-xs text-slate-400 mt-0.5">Tempo Cósmico: {currentTimeMyr.toFixed(1)} Myr • Integrador Simplético Leapfrog</p>
               </div>

@@ -129,7 +129,7 @@ export const HamburgerMenu: React.FC<HamburgerMenuProps> = ({
           ) : (
             <Menu className="w-5 h-5 text-cyan-400 group-hover:scale-110 transition-transform duration-200" />
           )}
-          <span className="text-sm font-bold tracking-wide hidden sm:inline">Menu AstroCollision</span>
+          <span className="text-sm font-bold tracking-wide hidden sm:inline">Galaxy</span>
         </button>
 
         {/* Quick Playback Bar right next to the hamburger button */}
@@ -203,7 +203,7 @@ export const HamburgerMenu: React.FC<HamburgerMenuProps> = ({
               <Orbit className="w-5 h-5 animate-[spin_18s_linear_infinite]" />
             </div>
             <div>
-              <h2 className="text-sm font-bold text-white tracking-wide">AstroCollision 3D</h2>
+              <h2 className="text-sm font-bold text-white tracking-wide">Galaxy</h2>
               <p className="text-[11px] text-slate-400">Simulador de Interação & Dinâmica de Galáxias</p>
             </div>
           </div>

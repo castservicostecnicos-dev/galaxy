@@ -101,7 +101,7 @@ async function startServer() {
   }
 
   app.listen(PORT, '0.0.0.0', () => {
-    console.log(`🌌 AstroCollision Server rodando em http://localhost:${PORT}`);
+    console.log(`🌌 Galaxy Server rodando em http://localhost:${PORT}`);
   });
 }
 
