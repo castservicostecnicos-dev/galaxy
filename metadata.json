@@ -1,0 +1,6 @@
+{
+  "name": "AstroCollision - Simulador de Galáxias 3D",
+  "description": "Simulador de interação e colisão de galáxias em tempo real com física N-corpos de alta precisão, modelos pré-definidos (Via Láctea, Andrômeda, Antenas, Cartwheel), múltiplos cenários simultâneos, renderização 3D de alta resolução e relatórios científicos.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
