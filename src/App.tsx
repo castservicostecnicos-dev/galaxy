@@ -23,7 +23,7 @@ import { generateGalaxyPair } from './physics/galaxyGenerator';
 import { GalaxySimulationEngine } from './physics/nbodyEngine';
 import { CameraPreset, GalaxyParams, PhysicalMetrics, SimulationPreset } from './types/galaxy';
 import { GalaxyScene3D } from './components/GalaxyScene3D';
-import { ControlDock } from './components/ControlDock';
+import { HamburgerMenu } from './components/HamburgerMenu';
 import { GalaxyParametersModal } from './components/GalaxyParametersModal';
 import { StatisticalDiagnosticsModal } from './components/StatisticalDiagnosticsModal';
 import { ScientificReportModal } from './components/ScientificReportModal';
@@ -64,6 +64,7 @@ export default function App() {
   const [resolutionScale, setResolutionScale] = useState<number>(1.5);
   const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
   const [isCinematicMode, setIsCinematicMode] = useState<boolean>(false);
+  const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
 
   // 4. Modals State
   const [isParamsOpen, setIsParamsOpen] = useState<boolean>(false);
@@ -147,7 +148,7 @@ export default function App() {
     }
   };
 
-  // Keyboard shortcuts (Space = Play/Pause, R = Reset, S = Step)
+  // Keyboard shortcuts (Space = Play/Pause, R = Reset, S = Step, M = Menu, C = Cinema, ESC = Exit)
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       // Ignore if user is typing in an input
@@ -161,17 +162,24 @@ export default function App() {
         handleReset();
       } else if (e.code === 'KeyS') {
         handleStep();
+      } else if (e.code === 'KeyM') {
+        e.preventDefault();
+        setIsMenuOpen((prev) => !prev);
       } else if (e.code === 'KeyC') {
         e.preventDefault();
         setIsCinematicMode((prev) => !prev);
-      } else if (e.code === 'Escape' && isCinematicMode) {
-        setIsCinematicMode(false);
+      } else if (e.code === 'Escape') {
+        if (isMenuOpen) {
+          setIsMenuOpen(false);
+        } else if (isCinematicMode) {
+          setIsCinematicMode(false);
+        }
       }
     };
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [handleReset, handleStep, isCinematicMode]);
+  }, [handleReset, handleStep, isCinematicMode, isMenuOpen]);
 
   return (
     <div className="relative w-screen h-screen overflow-hidden bg-slate-950 font-sans select-none">
@@ -204,49 +212,40 @@ export default function App() {
         </div>
       )}
 
-      {/* 2. Top-Left: Minimal Title / Spec Badge (Non-occluding, hides in cinematic mode) */}
-      <div className={`absolute top-4 left-4 z-20 pointer-events-auto flex flex-col gap-1.5 transition-all duration-500 ${
-        isCinematicMode ? 'opacity-0 -translate-y-6 pointer-events-none' : 'opacity-100 translate-y-0'
-      }`}>
-        <div className="flex items-center gap-2.5 px-3.5 py-2 rounded-xl bg-slate-900/90 border border-slate-800 shadow-xl backdrop-blur-md">
-          <div className="p-1.5 bg-cyan-500/15 rounded-lg border border-cyan-500/30 text-cyan-400">
-            <Orbit className="w-5 h-5 animate-[spin_18s_linear_infinite]" />
-          </div>
-          <div>
-            <div className="flex items-center gap-2">
-              <h1 className="text-sm font-bold text-white tracking-wide">AstroCollision 3D</h1>
-              <span className="text-[10px] font-mono uppercase px-1.5 py-0.5 rounded bg-cyan-500/20 text-cyan-300 border border-cyan-500/30">
-                N-Body Leapfrog
-              </span>
-            </div>
-            <p className="text-[11px] text-slate-400 font-medium">{currentPreset.title}</p>
-          </div>
-        </div>
-
-        {/* Real-time Scientific Telemetry Chip Bar */}
-        <div className="flex items-center gap-2 text-[11px] font-mono text-slate-300">
-          <div className="px-2.5 py-1 rounded-lg bg-slate-900/80 border border-slate-800/80 shadow-md backdrop-blur-md flex items-center gap-1.5">
-            <span className="text-slate-400 font-sans text-[10px]">Partículas:</span>
-            <span className="text-cyan-400 font-semibold">{engine.starsData.totalStars.toLocaleString()}</span>
-          </div>
-
-          {metrics && (
-            <div className="px-2.5 py-1 rounded-lg bg-slate-900/80 border border-slate-800/80 shadow-md backdrop-blur-md flex items-center gap-1.5">
-              <span className="text-slate-400 font-sans text-[10px]">Separação R:</span>
-              <span className="text-amber-400 font-semibold">{metrics.currentSeparation.toFixed(1)} kpc</span>
-            </div>
-          )}
-
-          {metrics && (
-            <div className="hidden sm:flex px-2.5 py-1 rounded-lg bg-slate-900/80 border border-slate-800/80 shadow-md backdrop-blur-md items-center gap-1.5">
-              <span className="text-slate-400 font-sans text-[10px]">Deriva Hamiltoniana:</span>
-              <span className={`font-semibold ${Math.abs(metrics.energyConservationDrift) < 1.0 ? 'text-emerald-400' : 'text-amber-400'}`}>
-                {metrics.energyConservationDrift.toFixed(2)}%
-              </span>
-            </div>
-          )}
-        </div>
-      </div>
+      {/* 2. Top-Left Hamburger Menu & Drawer (All simulation controls, models and analysis) */}
+      <HamburgerMenu
+        isOpen={isMenuOpen}
+        onToggleOpen={() => setIsMenuOpen(!isMenuOpen)}
+        onClose={() => setIsMenuOpen(false)}
+        isRunning={isRunning}
+        onTogglePlay={() => setIsRunning(!isRunning)}
+        onStep={handleStep}
+        onReset={handleReset}
+        currentPresetId={currentPreset.id}
+        onSelectPreset={handleSelectPreset}
+        currentTimeMyr={currentTimeMyr}
+        simulationSpeed={simulationSpeed}
+        onSpeedChange={setSimulationSpeed}
+        cameraPreset={cameraPreset}
+        onCameraPresetChange={setCameraPreset}
+        showTrails={showTrails}
+        onToggleTrails={() => setShowTrails(!showTrails)}
+        showRocheSpheres={showRocheSpheres}
+        onToggleRoche={() => setShowRocheSpheres(!showRocheSpheres)}
+        showPotentialGrid={showPotentialGrid}
+        onToggleGrid={() => setShowPotentialGrid(!showPotentialGrid)}
+        resolutionScale={resolutionScale}
+        onResolutionScaleChange={setResolutionScale}
+        metrics={metrics}
+        isCinematicMode={isCinematicMode}
+        onToggleCinematicMode={() => setIsCinematicMode(!isCinematicMode)}
+        onOpenParameters={() => setIsParamsOpen(true)}
+        onOpenDiagnostics={() => setIsDiagnosticsOpen(true)}
+        onOpenReport={() => setIsReportOpen(true)}
+        onOpenMultiScenario={() => setIsMultiScenarioOpen(true)}
+        onOpenAI={() => setIsAIOpen(true)}
+        onOpenTheory={() => setIsTheoryOpen(true)}
+      />
 
       {/* 3. Top-Right: Quick Controls, Cinematic Toggle & Fullscreen */}
       <div className={`absolute top-4 right-4 z-20 pointer-events-auto flex items-center gap-2 transition-all duration-500 ${
@@ -275,41 +274,6 @@ export default function App() {
         >
           {isFullscreen ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
         </button>
-      </div>
-
-      {/* 4. Ergonomic Collapsible Bottom Control Dock (Hides smoothly in cinematic mode) */}
-      <div className={`transition-all duration-500 ${
-        isCinematicMode ? 'opacity-0 translate-y-24 pointer-events-none' : 'opacity-100 translate-y-0'
-      }`}>
-        <ControlDock
-          isRunning={isRunning}
-          onTogglePlay={() => setIsRunning(!isRunning)}
-          onStep={handleStep}
-          onReset={handleReset}
-          currentPresetId={currentPreset.id}
-          onSelectPreset={handleSelectPreset}
-          currentTimeMyr={currentTimeMyr}
-          simulationSpeed={simulationSpeed}
-          onSpeedChange={setSimulationSpeed}
-          cameraPreset={cameraPreset}
-          onCameraPresetChange={setCameraPreset}
-          showTrails={showTrails}
-          onToggleTrails={() => setShowTrails(!showTrails)}
-          showRocheSpheres={showRocheSpheres}
-          onToggleRoche={() => setShowRocheSpheres(!showRocheSpheres)}
-          showPotentialGrid={showPotentialGrid}
-          onToggleGrid={() => setShowPotentialGrid(!showPotentialGrid)}
-          resolutionScale={resolutionScale}
-          onResolutionScaleChange={setResolutionScale}
-          metrics={metrics}
-          isCinematicMode={isCinematicMode}
-          onToggleCinematicMode={() => setIsCinematicMode(!isCinematicMode)}
-          onOpenParameters={() => setIsParamsOpen(true)}
-          onOpenDiagnostics={() => setIsDiagnosticsOpen(true)}
-          onOpenReport={() => setIsReportOpen(true)}
-          onOpenMultiScenario={() => setIsMultiScenarioOpen(true)}
-          onOpenAI={() => setIsAIOpen(true)}
-        />
       </div>
 
       {/* 5. Modals */}
